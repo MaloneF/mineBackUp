@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.storage.mapper.TOrderDao">
+
+    <resultMap type="com.ruoyi.project.storage.domain.TOrder" id="TOrderMap">
+        <result property="id" column="id" jdbcType="OTHER"/>
+        <result property="userId" column="user_id" jdbcType="OTHER"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
+        <result property="orderCode" column="order_code" jdbcType="OTHER"/>
+        <result property="orderName" column="order_name" jdbcType="VARCHAR"/>
+        <result property="emptyBoxOrderTime" column="empty_box_order_time" jdbcType="TIMESTAMP"/>
+        <result property="heavyBoxOrderTime" column="heavy_box_order_time" jdbcType="TIMESTAMP"/>
+        <result property="emptyBoxCallName" column="empty_box_call_name" jdbcType="VARCHAR"/>
+        <result property="emptyBoxCallPhone" column="empty_box_call_phone" jdbcType="VARCHAR"/>
+        <result property="emptyBoxCallAddress" column="empty_box_call_address" jdbcType="VARCHAR"/>
+        <result property="emptyBoxCallTime" column="empty_box_call_time" jdbcType="OTHER"/>
+        <result property="emptyBoxCallInterval" column="empty_box_call_interval" jdbcType="VARCHAR"/>
+        <result property="heavyBoxCallName" column="heavy_box_call_name" jdbcType="VARCHAR"/>
+        <result property="heavyBoxCallPhone" column="heavy_box_call_phone" jdbcType="VARCHAR"/>
+        <result property="heavyBoxCallAddress" column="heavy_box_call_address" jdbcType="VARCHAR"/>
+        <result property="heavyBoxCallTime" column="heavy_box_call_time" jdbcType="OTHER"/>
+        <result property="heavyBoxCallInterval" column="heavy_box_call_interval" jdbcType="VARCHAR"/>
+        <result property="boxId" column="box_id" jdbcType="OTHER"/>
+        <result property="boxCode" column="box_code" jdbcType="OTHER"/>
+        <result property="boxStandard" column="box_standard" jdbcType="VARCHAR"/>
+        <result property="boxUnitPrice" column="box_unit_price" jdbcType="OTHER"/>
+        <result property="leaseDuration" column="lease_duration" jdbcType="OTHER"/>
+        <result property="totalPrice" column="total_price" jdbcType="OTHER"/>
+        <result property="sortNo" column="sort_no" jdbcType="OTHER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="version" column="version" jdbcType="OTHER"/>
+        <result property="delFlag" column="del_flag" jdbcType="VARCHAR"/>
+        <result property="appDelFlag" column="app_del_flag" jdbcType="OTHER"/>
+        <result property="backendDelFlag" column="backend_del_flag" jdbcType="OTHER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TOrderMap">
+        select
+          id, user_id, status, order_code, order_name, empty_box_order_time, heavy_box_order_time, empty_box_call_name, empty_box_call_phone, empty_box_call_address, empty_box_call_time, empty_box_call_interval, heavy_box_call_name, heavy_box_call_phone, heavy_box_call_address, heavy_box_call_time, heavy_box_call_interval, box_id, box_code, box_standard, box_unit_price, lease_duration, total_price, sort_no, create_time, create_by, update_time, update_by, version, del_flag, app_del_flag, backend_del_flag
+        from ruoyi_bluenet.t_order
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TOrderMap">
+        select
+          id, user_id, status, order_code, order_name, empty_box_order_time, heavy_box_order_time, empty_box_call_name, empty_box_call_phone, empty_box_call_address, empty_box_call_time, empty_box_call_interval, heavy_box_call_name, heavy_box_call_phone, heavy_box_call_address, heavy_box_call_time, heavy_box_call_interval, box_id, box_code, box_standard, box_unit_price, lease_duration, total_price, sort_no, create_time, create_by, update_time, update_by, version, del_flag, app_del_flag, backend_del_flag
+        from ruoyi_bluenet.t_order
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" parameterType="com.ruoyi.project.storage.domain.TOrder" resultMap="TOrderMap">
+        select
+        id, user_id, status, order_code, order_name, empty_box_order_time, heavy_box_order_time, empty_box_call_name,
+        empty_box_call_phone, empty_box_call_address, empty_box_call_time, empty_box_call_interval, heavy_box_call_name,
+        heavy_box_call_phone, heavy_box_call_address, heavy_box_call_time, heavy_box_call_interval, box_id, box_code,
+        box_standard, box_unit_price, lease_duration, total_price, sort_no, create_time, create_by, update_time,
+        update_by, version, del_flag, app_del_flag, backend_del_flag
+        from ruoyi_bluenet.t_order
+        <where>
+
+             del_flag = '0'
+            and app_del_flag = 0
+            and backend_del_flag = 0
+            <if test="userId != null ">
+
+            and user_id =#{userId}
+            </if>
+            <if test="id!= null">
+                and id = #{id}
+            </if>
+<!--            <if test="nickName!= null">-->
+<!--                and empty_call_name = #{nickName}-->
+<!--            </if>-->
+            <if test="status!= null">
+                and status = #{status}
+            </if>
+<!--            <if test="emptyBoxOrderTime != null">-->
+<!--                and emptyBoxOrderTimeStart = #{empty_box_order_time}-->
+<!--            </if>-->
+<!--            <if test="emptyBoxOrderTimeEnd != null">-->
+<!--                and emptyBoxOrderTimeEnd = #{status}-->
+<!--            </if>-->
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into ruoyi_bluenet.t_order(user_id, status, order_code, order_name, empty_box_order_time, heavy_box_order_time, empty_box_call_name, empty_box_call_phone, empty_box_call_address, empty_box_call_time, empty_box_call_interval, heavy_box_call_name, heavy_box_call_phone, heavy_box_call_address, heavy_box_call_time, heavy_box_call_interval, box_id, box_code, box_standard, box_unit_price, lease_duration, total_price, sort_no, create_time, create_by, update_time, update_by, version, del_flag, app_del_flag, backend_del_flag)
+        values (#{userId}, #{status}, #{orderCode}, #{orderName}, #{emptyBoxOrderTime}, #{heavyBoxOrderTime}, #{emptyBoxCallName}, #{emptyBoxCallPhone}, #{emptyBoxCallAddress}, #{emptyBoxCallTime}, #{emptyBoxCallInterval}, #{heavyBoxCallName}, #{heavyBoxCallPhone}, #{heavyBoxCallAddress}, #{heavyBoxCallTime}, #{heavyBoxCallInterval}, #{boxId}, #{boxCode}, #{boxStandard}, #{boxUnitPrice}, #{leaseDuration}, #{totalPrice}, #{sortNo}, #{createTime}, #{createBy}, #{updateTime}, #{updateBy}, #{version}, #{delFlag}, #{appDelFlag}, #{backendDelFlag})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into ruoyi_bluenet.t_order(user_id, status, order_code, order_name, empty_box_order_time,
+        heavy_box_order_time, empty_box_call_name, empty_box_call_phone, empty_box_call_address, empty_box_call_time,
+        empty_box_call_interval, heavy_box_call_name, heavy_box_call_phone, heavy_box_call_address, heavy_box_call_time,
+        heavy_box_call_interval, box_id, box_code, box_standard, box_unit_price, lease_duration, total_price, sort_no,
+        create_time, create_by, update_time, update_by, version, del_flag, app_del_flag, backend_del_flag)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.userId}, #{entity.status}, #{entity.orderCode}, #{entity.orderName}, #{entity.emptyBoxOrderTime},
+            #{entity.heavyBoxOrderTime}, #{entity.emptyBoxCallName}, #{entity.emptyBoxCallPhone},
+            #{entity.emptyBoxCallAddress}, #{entity.emptyBoxCallTime}, #{entity.emptyBoxCallInterval},
+            #{entity.heavyBoxCallName}, #{entity.heavyBoxCallPhone}, #{entity.heavyBoxCallAddress},
+            #{entity.heavyBoxCallTime}, #{entity.heavyBoxCallInterval}, #{entity.boxId}, #{entity.boxCode},
+            #{entity.boxStandard}, #{entity.boxUnitPrice}, #{entity.leaseDuration}, #{entity.totalPrice},
+            #{entity.sortNo}, #{entity.createTime}, #{entity.createBy}, #{entity.updateTime}, #{entity.updateBy},
+            #{entity.version}, #{entity.delFlag}, #{entity.appDelFlag}, #{entity.backendDelFlag})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into ruoyi_bluenet.t_order(user_id, status, order_code, order_name, empty_box_order_time,
+        heavy_box_order_time, empty_box_call_name, empty_box_call_phone, empty_box_call_address, empty_box_call_time,
+        empty_box_call_interval, heavy_box_call_name, heavy_box_call_phone, heavy_box_call_address, heavy_box_call_time,
+        heavy_box_call_interval, box_id, box_code, box_standard, box_unit_price, lease_duration, total_price, sort_no,
+        create_time, create_by, update_time, update_by, version, del_flag, app_del_flag, backend_del_flag)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.userId}, #{entity.status}, #{entity.orderCode}, #{entity.orderName}, #{entity.emptyBoxOrderTime},
+            #{entity.heavyBoxOrderTime}, #{entity.emptyBoxCallName}, #{entity.emptyBoxCallPhone},
+            #{entity.emptyBoxCallAddress}, #{entity.emptyBoxCallTime}, #{entity.emptyBoxCallInterval},
+            #{entity.heavyBoxCallName}, #{entity.heavyBoxCallPhone}, #{entity.heavyBoxCallAddress},
+            #{entity.heavyBoxCallTime}, #{entity.heavyBoxCallInterval}, #{entity.boxId}, #{entity.boxCode},
+            #{entity.boxStandard}, #{entity.boxUnitPrice}, #{entity.leaseDuration}, #{entity.totalPrice},
+            #{entity.sortNo}, #{entity.createTime}, #{entity.createBy}, #{entity.updateTime}, #{entity.updateBy},
+            #{entity.version}, #{entity.delFlag}, #{entity.appDelFlag}, #{entity.backendDelFlag})
+        </foreach>
+        on duplicate key update
+        user_id = values(user_id) , status = values(status) , order_code = values(order_code) , order_name =
+        values(order_name) , empty_box_order_time = values(empty_box_order_time) , heavy_box_order_time =
+        values(heavy_box_order_time) , empty_box_call_name = values(empty_box_call_name) , empty_box_call_phone =
+        values(empty_box_call_phone) , empty_box_call_address = values(empty_box_call_address) , empty_box_call_time =
+        values(empty_box_call_time) , empty_box_call_interval = values(empty_box_call_interval) , heavy_box_call_name =
+        values(heavy_box_call_name) , heavy_box_call_phone = values(heavy_box_call_phone) , heavy_box_call_address =
+        values(heavy_box_call_address) , heavy_box_call_time = values(heavy_box_call_time) , heavy_box_call_interval =
+        values(heavy_box_call_interval) , box_id = values(box_id) , box_code = values(box_code) , box_standard =
+        values(box_standard) , box_unit_price = values(box_unit_price) , lease_duration = values(lease_duration) ,
+        total_price = values(total_price) , sort_no = values(sort_no) , create_time = values(create_time) , create_by =
+        values(create_by) , update_time = values(update_time) , update_by = values(update_by) , version =
+        values(version) , del_flag = values(del_flag) , app_del_flag = values(app_del_flag) , backend_del_flag =
+        values(backend_del_flag)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update ruoyi_bluenet.t_order
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="orderCode != null">
+                order_code = #{orderCode},
+            </if>
+            <if test="orderName != null and orderName != ''">
+                order_name = #{orderName},
+            </if>
+            <if test="emptyBoxOrderTime != null">
+                empty_box_order_time = #{emptyBoxOrderTime},
+            </if>
+            <if test="heavyBoxOrderTime != null">
+                heavy_box_order_time = #{heavyBoxOrderTime},
+            </if>
+            <if test="emptyBoxCallName != null and emptyBoxCallName != ''">
+                empty_box_call_name = #{emptyBoxCallName},
+            </if>
+            <if test="emptyBoxCallPhone != null and emptyBoxCallPhone != ''">
+                empty_box_call_phone = #{emptyBoxCallPhone},
+            </if>
+            <if test="emptyBoxCallAddress != null and emptyBoxCallAddress != ''">
+                empty_box_call_address = #{emptyBoxCallAddress},
+            </if>
+            <if test="emptyBoxCallTime != null">
+                empty_box_call_time = #{emptyBoxCallTime},
+            </if>
+            <if test="emptyBoxCallInterval != null and emptyBoxCallInterval != ''">
+                empty_box_call_interval = #{emptyBoxCallInterval},
+            </if>
+            <if test="heavyBoxCallName != null and heavyBoxCallName != ''">
+                heavy_box_call_name = #{heavyBoxCallName},
+            </if>
+            <if test="heavyBoxCallPhone != null and heavyBoxCallPhone != ''">
+                heavy_box_call_phone = #{heavyBoxCallPhone},
+            </if>
+            <if test="heavyBoxCallAddress != null and heavyBoxCallAddress != ''">
+                heavy_box_call_address = #{heavyBoxCallAddress},
+            </if>
+            <if test="heavyBoxCallTime != null">
+                heavy_box_call_time = #{heavyBoxCallTime},
+            </if>
+            <if test="heavyBoxCallInterval != null and heavyBoxCallInterval != ''">
+                heavy_box_call_interval = #{heavyBoxCallInterval},
+            </if>
+            <if test="boxId != null">
+                box_id = #{boxId},
+            </if>
+            <if test="boxCode != null">
+                box_code = #{boxCode},
+            </if>
+            <if test="boxStandard != null and boxStandard != ''">
+                box_standard = #{boxStandard},
+            </if>
+            <if test="boxUnitPrice != null">
+                box_unit_price = #{boxUnitPrice},
+            </if>
+            <if test="leaseDuration != null">
+                lease_duration = #{leaseDuration},
+            </if>
+            <if test="totalPrice != null">
+                total_price = #{totalPrice},
+            </if>
+            <if test="sortNo != null">
+                sort_no = #{sortNo},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+            <if test="version != null">
+                version = #{version},
+            </if>
+            <if test="delFlag != null and delFlag != ''">
+                del_flag = #{delFlag},
+            </if>
+            <if test="appDelFlag != null">
+                app_del_flag = #{appDelFlag},
+            </if>
+            <if test="backendDelFlag != null">
+                backend_del_flag = #{backendDelFlag},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from ruoyi_bluenet.t_order where id = #{id}
+    </delete>
+
+</mapper>

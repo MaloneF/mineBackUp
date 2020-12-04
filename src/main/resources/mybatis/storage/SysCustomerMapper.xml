@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.storage.mapper.CustomerMapper">
+    <resultMap type="com.ruoyi.project.storage.domain.CustomerEntity" id="CustomerInfo">
+        <id property="userId" column="user_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="status" column="status"/>
+        <result property="userName" column="user_name"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="userType" column="user_type"/>
+        <result property="email" column="email"/>
+        <result property="phonenumber" column="phonenumber"/>
+        <result property="sex" column="sex"/>
+        <result property="avatar" column="avatar"/>
+        <result property="password" column="password"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="loginIp" column="login_ip"/>
+        <result property="loginDate" column="login_date"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="currentPoints" column="current_points"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <sql id="selectAll">
+    SELECT
+    `user_id`,
+	`dept_id`,
+	`user_name`,
+	`nick_name`,
+	`user_type`,
+	`email`,
+	`phonenumber`,
+	`sex`,
+	`avatar`,
+	`password`,
+	`status`,
+	`del_flag`,
+	`login_ip`,
+	`login_date`,
+	`create_by`,
+	`create_time`,
+	`update_by`,
+	`update_time`,
+	`remark`,
+	`current_points`,
+	`version`
+FROM
+	sys_user
+
+</sql>
+    <insert id="insertCustomer" parameterType="com.ruoyi.project.storage.domain.CustomerEntity" useGeneratedKeys="true"
+            keyProperty="userId">
+		INSERT INTO `ruoyi_bluenet`.`sys_user` (
+	`user_id`,
+	`dept_id`,
+	`user_name`,
+	`nick_name`,
+	`user_type`,
+	`email`,
+	`phonenumber`,
+	`sex`,
+	`avatar`,
+	`password`,
+	`status`,
+	`del_flag`,
+	`login_ip`,
+	`login_date`,
+	`create_by`,
+	`create_time`,
+	`update_by`,
+	`update_time`,
+	`remark`,
+	`current_points`,
+	`version`
+)
+VALUES
+	(
+		#{userId},
+		#{deptId},
+		#{userName},
+		#{nickName},
+		#{userType},
+		#{email},
+		#{phonenumber},
+		#{sex},
+		#{avatar},
+		#{password},
+		#{status},
+		#{delFlag},
+		#{loginIp},
+		#{loginDate},
+		#{createBy},
+		#{createTime},
+		#{updateBy},
+		#{updateTime},
+		#{remark},
+		#{currentPoints},
+		#{version}
+	);
+
+	</insert>
+
+    <select id="selectCustomer" parameterType="com.ruoyi.project.storage.domain.CustomerEntity"
+            resultMap="CustomerInfo">
+        <include refid="selectAll"/>
+        <where>
+            and del_flag='0'
+            <if test="searchValue!=null and searchValue!=''">
+                and (
+                nick_name like concat(#{searchValue},'%')
+                or user_name like concat(#{searchValue},'%')
+                or phonenumber like concat(#{searchValue},'%')
+                or email like concat(#{searchValue},'%')
+                )
+            </if>
+            and user_type=#{userType}
+        </where>
+        order by update_time desc
+    </select>
+
+    <select id="selectCustomerById" parameterType="com.ruoyi.project.storage.domain.CustomerEntity"
+            resultMap="CustomerInfo">
+        <include refid="selectAll"/>
+        <where>
+            and del_flag='0'
+            <if test="userId!=null ">
+                and
+
+                user_id = #{userId}
+
+            </if>
+            and user_type=#{userType}
+        </where>
+        order by update_time desc
+    </select>
+    <update id="updateCustomer" parameterType="com.ruoyi.project.storage.domain.CustomerEntity">
+        UPDATE `ruoyi_bluenet`.`sys_user`
+        SET
+        <if test="userId!=null">`user_id` = #{userId},</if>
+        <if test="nickName!=null">`nick_name` = #{nickName},</if>
+        <if test="phonenumber!=null">`phonenumber` = #{phonenumber},</if>
+        <if test="email!=null">`email`=#{email},</if>
+        <if test="currentPoints!=null">
+            `current_points`= #{currentPoints},
+        </if>
+
+        version = version + 1
+        WHERE
+        `user_id` = #{userId};
+    </update>
+
+    <!--    <delete id="deleteLogininforByIds" parameterType="Long">-->
+    <!--        delete from sys_logininfor where info_id in-->
+    <!--        <foreach collection="array" item="infoId" open="(" separator="," close=")">-->
+    <!--            #{infoId}-->
+    <!--        </foreach>-->
+    <!--    </delete>-->
+    <update id="logicdeleteCustomer" parameterType="java.lang.Long">
+    UPDATE `ruoyi_bluenet`.`sys_user`
+    SET `del_flag` = '2'
+        version = version + 1
+    WHERE
+	`user_id` = #{userId};
+
+
+
+	</update>
+    <!--    <update id="cleanLogininfor">-->
+    <!--        truncate table sys_logininfor-->
+    <!--    </update>-->
+    <update id="resect" parameterType="java.util.Map">
+        update sys_user
+        set password=#{password},
+        update_time = #{time},
+        update_by=#{user},
+        version = version + 1
+        where
+        del_flag='0'
+        and user_id in
+        <foreach collection="userIds" index="index" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </update>
+
+    <update id="operateCustomer" parameterType="java.util.Map">
+        update sys_user
+        set
+        <if test="null != operate and 'enable'.toString()==operate">status = '0',</if>
+        <if test="null != operate and 'disable'.toString()==operate">status = '1',</if>
+        version = version + 1
+        where
+        del_flag='0'
+        and user_id in
+        <foreach collection="userIds" item="userId" index="index" open="(" separator="," close=")">
+
+            #{userId}
+        </foreach>
+
+    </update>
+
+    <select id="getPassword" parameterType="java.lang.Long" resultType="java.lang.String">
+		select  `password`
+		from sys_user
+		where `user_id` = #{userId} and del_flag = '0'
+	</select>
+
+    <update id="updatePassword" parameterType="com.ruoyi.project.storage.domain.CustomerEntity">
+        update sys_user
+        <set>
+
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null and updateTime != ''">update_time = #{updateTime},</if>
+            version = version + 1
+        </set>
+        where user_id = #{userId}
+        and del_flag = '0'
+    </update>
+</mapper>

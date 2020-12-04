@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.storage.mapper.BoxStandMapper">
+
+    <resultMap id="BaseResultMap" type="com.ruoyi.project.storage.domain.BoxStandardEntity">
+        <!--@Table t_box_standard-->
+        <result property="id" column="id"/>
+        <result property="boxStandard" column="box_standard"/>
+        <result property="boxUnitPrice" column="box_unit_price"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="sortNo" column="sort_no" jdbcType="OTHER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="version" column="version" jdbcType="OTHER"/>
+        <result property="delFlag" column="del_flag" jdbcType="VARCHAR"/>
+        <result property="totalNumber" column="total_number"/>
+        <result property="usedNumber" column="used_number"/>
+        <result property="inventoryNumber" column="inventory_number"/>
+        <result property="useRatio" column="use_ratio"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          id, box_standard, box_unit_price, remark, sort_no, create_time, create_by, update_time, update_by, version, del_flag
+        from ruoyi_bluenet.t_box_standard
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="selectStandard" resultMap="BaseResultMap">
+        select
+        box_standard,box_unit_price,remark,inventory_number
+        from ruoyi_bluenet.t_box_standard
+       where
+       del_flag = '0'
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="selectBoxStandard" parameterType="com.ruoyi.project.storage.domain.BoxStandardEntity"
+            resultMap="BaseResultMap">
+      SELECT
+	temp.id,
+	temp.box_standard,
+	temp.box_unit_price,
+	temp.remark,
+	temp.sort_no,
+	temp.create_time,
+	temp.create_by,
+	temp.update_time,
+	temp.update_by,
+	temp.version,
+	temp.del_flag,
+	IFNULL(temp.total, 0) AS total_number,
+	IFNULL(temp.used, 0) AS use_number,
+	IFNULL(temp.total - temp.used, 0) AS inventory_number,
+	CONCAT(
+		ROUND(
+			IFNULL(temp.used / temp.total, 0) * 100
+		),
+		'%'
+	) AS use_ratio
+FROM
+	(
+		SELECT
+			standard.id,
+			standard.box_standard,
+			standard.box_unit_price,
+			standard.remark,
+			standard.sort_no,
+			standard.create_time,
+			standard.create_by,
+			standard.update_time,
+			standard.update_by,
+			standard.version,
+			standard.del_flag,
+			COUNT(info.is_used) AS total,
+			SUM(info.is_used) AS used
+		FROM
+			t_box_standard standard
+		LEFT JOIN t_box_info info ON standard.box_standard = info.box_standard
+		AND info.del_flag = '0'
+		WHERE
+			standard.del_flag = '0'
+
+		GROUP BY
+			standard.box_standard
+	) temp
+WHERE
+      temp.del_flag = '0'
+        <if test="searchValue!=null and searchValue!=''">
+
+           and  temp.box_standard like concat(#{searchValue},'%')
+
+        </if>
+
+ORDER BY temp.update_by DESC
+    </select>
+
+    <select id="selectBoxStandardByBoxStandard" parameterType="java.lang.String"
+            resultMap="BaseResultMap">
+        select
+        id, box_standard, box_unit_price, remark, sort_no, create_time, create_by, update_time, update_by, version,
+        del_flag,`total_number`, `used_number`, `inventory_number`, `use_ratio`
+        from ruoyi_bluenet.t_box_standard
+        <where>
+            `del_flag`= '0'
+
+            <if  test="boxStandard!=null and boxStandard!= ''">
+                and   box_standard = #{boxStandard}
+            </if>
+
+        </where>
+    </select>
+    <select id="selectBoxStandardById" parameterType="java.util.List"
+            resultMap="BaseResultMap">
+        select
+        id, box_standard, box_unit_price, remark, sort_no, create_time, create_by, update_time, update_by, version,
+        del_flag,`total_number`, `used_number`, `inventory_number`, `use_ratio`
+        from ruoyi_bluenet.t_box_standard
+        <where>
+            `del_flag`= '0'
+             and id in
+            <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+
+                #{item}
+
+            </foreach>
+        </where>
+    </select>
+
+
+
+
+
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into ruoyi_bluenet.t_box_standard(box_standard, box_unit_price, remark, sort_no, create_time, create_by, update_time, update_by, version, del_flag,`total_number`, `used_number`, `inventory_number`, `use_ratio`)
+        values (#{boxStandard}, #{boxUnitPrice}, #{remark}, #{sortNo}, #{createTime}, #{createBy}, #{updateTime}, #{updateBy}, #{version}, #{delFlag},#{totalNumber},#{usedNumber},#{inventoryNumber},#{useRatio})
+    </insert>
+
+    <!--通过箱子规模修改数据-->
+    <update id="increaseBoxStandard" parameterType="com.ruoyi.project.storage.domain.BoxStandardEntity">
+        update ruoyi_bluenet.t_box_standard
+        <set>
+            `used_number`= `used_number` + 1,
+            `inventory_number` = `inventory_number` - 1,
+
+            `use_ratio`=  CONCAT(ROUND( (used_number / total_number)*100, 2 ),'%'),
+            version = version + 1
+        </set>
+        <where>
+            `del_flag`= '0'
+            and
+            box_standard = #{boxStandard}
+        </where>
+    </update>
+<update id="decreaseBoxStandard" parameterType="java.lang.String">
+    update ruoyi_bluenet.t_box_standard
+        <set>
+
+            `used_number`= `used_number` - 1,
+            `inventory_number` = `inventory_number` + 1,
+
+            `use_ratio`= CONCAT(ROUND( (used_number / total_number)*100, 2 ),'%'),
+            version = version + 1
+        </set>
+        <where>
+            `del_flag`= '0'
+            and
+            box_standard in
+            <foreach collection="list" index="index" item="item" close=")" open="(" separator=",">
+
+
+             #{item}
+            </foreach>
+        </where>
+
+
+
+
+
+
+</update>
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="java.util.List">
+        update ruoyi_bluenet.t_box_standard
+        <set>
+            del_flag = '1',
+            version = version +1
+        </set>
+        <where>
+            id in
+            <foreach collection="list" index="index" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+
+        </where>
+    </delete>
+
+</mapper>

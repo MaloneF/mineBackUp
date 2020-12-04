@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.storage.mapper.TBoxInfoMapper">
+
+    <resultMap type="com.ruoyi.project.storage.domain.TBoxInfo" id="TBoxInfoMap">
+        <result property="id" column="id"/>
+        <result property="boxCode" column="box_code"/>
+        <result property="boxStandard" column="box_standard"/>
+        <result property="boxUnitPrice" column="box_unit_price"/>
+        <result property="usedByName" column="used_by"/>
+        <result property="used" column="is_used"/>
+        <result property="remark" column="remark"/>
+        <result property="sortNo" column="sort_no"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="version" column="version"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TBoxInfoMap">
+        select
+          id, box_code, box_standard, box_unit_price, used_by, is_used, remark, sort_no, create_time, create_by, update_time, update_by, version, del_flag
+        from ruoyi_bluenet.t_box_info
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TBoxInfoMap">
+        select
+          id, box_code, box_standard, box_unit_price, used_by, is_used, remark, sort_no, create_time, create_by, update_time, update_by, version, del_flag
+        from ruoyi_bluenet.t_box_info
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" parameterType="com.ruoyi.project.storage.domain.TBoxInfo" resultMap="TBoxInfoMap">
+        select
+        id, box_code, box_standard, box_unit_price, used_by, is_used, remark, sort_no, create_time, create_by,
+        update_time, update_by, version, del_flag
+        from ruoyi_bluenet.t_box_info
+        <where>
+            `del_flag`= '0'
+
+            <if test="boxStandard!=null and boxStandard!=''">
+                and `box_standard` like concat( #{boxStandard},'%')
+            </if>
+            <if test="used!=null and used !=''">
+                and `is_used`
+                like concat( #{uesd},'%')
+            </if>
+            <if test="usedByName!=null and usedByName!=''">
+                and `used_by` like concat( #{usedByName},'%')
+            </if>
+
+        </where>
+    </select>
+
+    <select id="queryByIds" parameterType="java.util.List" resultMap="TBoxInfoMap">
+        select
+        id, box_code, box_standard, box_unit_price, used_by, is_used, remark, sort_no, create_time, create_by,
+        update_time, update_by, version, del_flag
+
+        from ruoyi_bluenet.t_box_info
+        <where>
+            `del_flag`= '0'and
+            id in
+
+            <foreach collection="list" item="id" index="index" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+
+    </select>
+
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into ruoyi_bluenet.t_box_info(box_code, box_standard, box_unit_price, used_by, is_used, remark, sort_no, create_time, create_by, update_time, update_by, version, del_flag)
+        values (#{boxCode}, #{boxStandard}, #{boxUnitPrice}, #{usedByName}, #{used}, #{remark}, #{sortNo}, #{createTime}, #{createBy}, #{updateTime}, #{updateBy}, #{version}, #{delFlag})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into ruoyi_bluenet.t_box_info(box_code, box_standard, box_unit_price, used_by, is_used, remark, sort_no,
+        create_time, create_by, update_time, update_by, version, del_flag)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.boxCode}, #{entity.boxStandard}, #{entity.boxUnitPrice}, #{entity.usedByName}, #{entity.used},
+            #{entity.remark}, #{entity.sortNo}, #{entity.createTime}, #{entity.createBy}, #{entity.updateTime},
+            #{entity.updateBy}, #{entity.version}, #{entity.delFlag})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into ruoyi_bluenet.t_box_info(box_code, box_standard, box_unit_price, used_by, is_used, remark, sort_no,
+        create_time, create_by, update_time, update_by, version, del_flag)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.boxCode}, #{entity.boxStandard}, #{entity.boxUnitPrice}, #{entity.usedByName}, #{entity.used},
+            #{entity.remark}, #{entity.sortNo}, #{entity.createTime}, #{entity.createBy}, #{entity.updateTime},
+            #{entity.updateBy}, #{entity.version}, #{entity.delFlag})
+        </foreach>
+        on duplicate key update
+        box_code = values(box_code) , box_standard = values(box_standard) , box_unit_price = values(box_unit_price) ,
+        used_by = values(used_by) , is_used = values(is_used) , remark = values(remark) , sort_no = values(sort_no) ,
+        create_time = values(create_time) , create_by = values(create_by) , update_time = values(update_time) ,
+        update_by = values(update_by) , version = values(version) , del_flag = values(del_flag)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update ruoyi_bluenet.t_box_info
+        <set>
+            <if test="boxCode != null">
+                box_code = #{boxCode},
+            </if>
+            <if test="boxStandard != null and boxStandard != ''">
+                box_standard = #{boxStandard},
+            </if>
+            <if test="boxUnitPrice != null">
+                box_unit_price = #{boxUnitPrice},
+            </if>
+            <if test="usedBy != null">
+                used_by = #{usedBy},
+            </if>
+            <if test="isUsed != null">
+                is_used = #{isUsed},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="sortNo != null">
+                sort_no = #{sortNo},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+            <if test="version != null">
+                version = #{version},
+            </if>
+            <if test="delFlag != null and delFlag != ''">
+                del_flag = #{delFlag},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <update id="deleteById" parameterType="java.util.List">
+        update ruoyi_bluenet.t_box_info
+        <set>
+            del_flag = '1',
+            version = version +1
+        </set>
+        <where>
+            id in
+            <foreach collection="list" index="index" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+
+        </where>
+    </update>
+    <update id="deleteByBoxStandard" parameterType="java.util.List">
+        update ruoyi_bluenet.t_box_info
+        <set>
+            del_flag = '1',
+            version = version +1
+        </set>
+        <where>
+            box_standard in
+            <foreach collection="standList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+
+        </where>
+    </update>
+
+
+    <select id="selectWhenOrder" resultMap="TBoxInfoMap" parameterType="java.lang.String">
+        SELECT
+id,box_code, box_standard, box_unit_price, used_by, is_used, remark, sort_no,
+        create_time, create_by, update_time, update_by, version, del_flag
+      FROM t_box_info tb WHERE tb.is_used = '0' and del_flag = '0' and box_standard = #{boxStandard}
+      ORDER BY tb.create_time LIMIT 1
+
+    </select>
+
+    <update id="updateWhenOrder" parameterType="java.lang.Long">
+        update ruoyi_bluenet.t_box_info
+        <set>
+           is_used = '1'
+        </set>
+        <where>
+           id = #{id}
+        </where>
+    </update>
+
+
+</mapper>
